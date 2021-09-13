@@ -10,7 +10,7 @@ import (
 
 const (
 	ENDPOINT    = "https://ftx.com/api"
-	US_ENDPOINT = "http://ftx.us/api"
+	US_ENDPOINT = "https://ftx.us/api"
 )
 
 var json = jsoniter.ConfigCompatibleWithStandardLibrary
