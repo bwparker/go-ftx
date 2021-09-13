@@ -38,6 +38,9 @@ func signture(secret, body string) string {
 func (p *Client) newRequest(r Requester) *fasthttp.Request {
 	// avoid Pointer's butting
 	u, _ := url.ParseRequestURI(ENDPOINT)
+	if p.USA {
+		u, _ = url.ParseRequestURI(US_ENDPOINT)
+	}
 	u.Path = u.Path + r.Path()
 	u.RawQuery = r.Query()
 
@@ -56,14 +59,23 @@ func (p *Client) newRequest(r Requester) *fasthttp.Request {
 		payload += string(body)
 
 		req.Header.Set("Content-Type", "application/json")
-		req.Header.Set("FTX-KEY", p.Auth.Key)
-		req.Header.Set("FTX-SIGN", p.Auth.Signture(payload))
-		req.Header.Set("FTX-TS", nonce)
-
+		if p.USA {
+			req.Header.Set("FTXUS-KEY", p.Auth.Key)
+			req.Header.Set("FTXUS-SIGN", p.Auth.Signture(payload))
+			req.Header.Set("FTXUS-TS", nonce)
+		} else {
+			req.Header.Set("FTX-KEY", p.Auth.Key)
+			req.Header.Set("FTX-SIGN", p.Auth.Signture(payload))
+			req.Header.Set("FTX-TS", nonce)
+		}
 		// set id is there UseSubAccountID
 		subaccount := p.Auth.SubAccount()
 		if subaccount.Nickname != "" {
-			req.Header.Set("FTX-SUBACCOUNT", url.PathEscape(subaccount.Nickname))
+			if p.USA {
+				req.Header.Set("FTXUS-SUBACCOUNT", url.PathEscape(subaccount.Nickname))
+			} else {
+				req.Header.Set("FTX-SUBACCOUNT", url.PathEscape(subaccount.Nickname))
+			}
 		}
 	}
 

@@ -137,7 +137,7 @@ func Connect(ctx context.Context, ch chan Response, channels, symbols []string, 
 		l = log.New(os.Stdout, "ftx websocket", log.Llongfile)
 	}
 
-	conn, _, err := websocket.DefaultDialer.Dial("wss://ftx.com/ws/", nil)
+	conn, _, err := websocket.DefaultDialer.Dial("wss://ftx.us/ws/", nil)
 	if err != nil {
 		return err
 	}
@@ -249,7 +249,7 @@ func ConnectForPrivate(ctx context.Context, ch chan Response, key, secret string
 		l = log.New(os.Stdout, "ftx websocket", log.Llongfile)
 	}
 
-	conn, _, err := websocket.DefaultDialer.Dial("wss://ftx.com/ws/", nil)
+	conn, _, err := websocket.DefaultDialer.Dial("wss://ftx.us/ws/", nil)
 	if err != nil {
 		return err
 	}
