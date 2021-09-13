@@ -27,6 +27,9 @@ const (
 	ORDERBOOK
 	ORDERS
 	FILLS
+
+	WS_ENDPOINT = "wss://ftx.com/ws/"
+	US_ENDPOINT = "wss://ftx.us/ws/"
 )
 
 type request struct {
@@ -131,13 +134,19 @@ func ping(conn *websocket.Conn) (err error) {
 EXIT:
 	return err
 }
+func ConnectUS(ctx context.Context, ch chan Response, channels, symbols []string, l *log.Logger) error {
+	return connect(ctx, ch, channels, symbols, l, US_ENDPOINT)
+}
 
 func Connect(ctx context.Context, ch chan Response, channels, symbols []string, l *log.Logger) error {
+	return connect(ctx, ch, channels, symbols, l, WS_ENDPOINT)
+}
+func connect(ctx context.Context, ch chan Response, channels, symbols []string, l *log.Logger, ep string) error {
 	if l == nil {
 		l = log.New(os.Stdout, "ftx websocket", log.Llongfile)
 	}
 
-	conn, _, err := websocket.DefaultDialer.Dial("wss://ftx.com/ws/", nil)
+	conn, _, err := websocket.DefaultDialer.Dial(ep, nil)
 	if err != nil {
 		return err
 	}
@@ -244,12 +253,19 @@ func Connect(ctx context.Context, ch chan Response, channels, symbols []string, 
 	return nil
 }
 
+func ConnectForPrivateUS(ctx context.Context, ch chan Response, key, secret string, channels []string, l *log.Logger, subaccount ...string) error {
+	return connectForPrivate(ctx, ch, key, secret, channels, l, US_ENDPOINT, subaccount...)
+}
 func ConnectForPrivate(ctx context.Context, ch chan Response, key, secret string, channels []string, l *log.Logger, subaccount ...string) error {
+	return connectForPrivate(ctx, ch, key, secret, channels, l, WS_ENDPOINT, subaccount...)
+}
+
+func connectForPrivate(ctx context.Context, ch chan Response, key, secret string, channels []string, l *log.Logger, ep string, subaccount ...string) error {
 	if l == nil {
 		l = log.New(os.Stdout, "ftx websocket", log.Llongfile)
 	}
 
-	conn, _, err := websocket.DefaultDialer.Dial("wss://ftx.com/ws/", nil)
+	conn, _, err := websocket.DefaultDialer.Dial(ep, nil)
 	if err != nil {
 		return err
 	}
